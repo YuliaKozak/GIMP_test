@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Інформатика 11 клас - Тестування з Графічного Редактора GIMP</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311042 100%);
+            min-height: 100vh;
+            color: #f8fafc;
+        }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .glass-card-light {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .gradient-btn {
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            transition: all 0.3s ease;
+        }
+
+        .gradient-btn:hover {
+            background: linear-gradient(135deg, #4f46e5 0%, #9333ea 100%);
+            box-shadow: 0 10px 20px -10px rgba(168, 85, 247, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .custom-radio:checked + label {
+            border-color: #a855f7;
+            background-color: rgba(168, 85, 247, 0.15);
+        }
+
+        /* Print styles for certificate/result page */
+        @media print {
+            body {
+                background: white !important;
+                color: black !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .print-only {
+                display: block !important;
+            }
+            .certificate-box {
+                border: 4px double #4f46e5 !important;
+                background: white !important;
+                color: black !important;
+                box-shadow: none !important;
+            }
+        }
+    </style>
+</head>
+<body class="p-3 sm:p-6 md:p-10 flex flex-col justify-between items-center min-h-screen">
+
+    <!-- Container -->
+    <div class="w-full max-w-4xl mx-auto my-auto">
+        
+        <!-- HEADER -->
+        <header class="text-center mb-8 no-print">
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-card-light text-purple-300 text-sm font-medium mb-3">
+                <i data-lucide="graduation-cap" class="w-4 h-4"></i> Інформатика 11 Клас
+            </div>
+            <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-300 to-pink-400 mb-2">
+                Комп'ютерна графіка та редактор GIMP
+            </h1>
+            <p class="text-slate-400 text-sm sm:text-base max-w-xl mx-auto">
+                Онлайн-платформа для перевірки знань за матеріалами навчальної програми
+            </p>
+        </header>
+
+        <!-- SCREEN 1: WELCOME & REGISTRATION -->
+        <div id="welcomeScreen" class="glass-card rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6">
+            <div class="border-b border-slate-700/60 pb-5">
+                <h2 class="text-xl sm:text-2xl font-bold flex items-center gap-2 text-white">
+                    <i data-lucide="user-check" class="text-purple-400"></i> Реєстрація учня
+                </h2>
+                <p class="text-slate-400 text-sm mt-1">Заповніть дані для формування підсумкового балу та сертифіката</p>
+            </div>
+
+            <form id="studentForm" class="space-y-5" onsubmit="event.preventDefault(); startQuiz();">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">Прізвище та Ім'я</label>
+                        <div class="relative">
+                            <i data-lucide="user" class="absolute left-3 top-3.5 w-5 h-5 text-slate-400"></i>
+                            <input type="text" id="studentName" required placeholder="напр. Шевченко Тарас" 
+                                class="w-full pl-10 pr-4 py-3 bg-slate-900/60 border border-slate-700 rounded-xl focus:ring-2 focus:ring-purple-500 focus:outline-none text-white placeholder-slate-500">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">Клас</label>
+                        <div class="relative">
+                            <i data-lucide="school" class="absolute left-3 top-3.5 w-5 h-5 text-slate-400"></i>
+                            <select id="studentClass" required class="w-full pl-10 pr-4 py-3 bg-slate-900/60 border border-slate-700 rounded-xl focus:ring-2 focus:ring-purple-500 focus:outline-none text-white">
+                                <option value="" disabled selected>Оберіть клас</option>
+                                <option value="11-А">11-А</option>
+                                <option value="11-Б">11-Б</option>
+                                <option value="11-В">11-В</option>
+                                <option value="11-Г">11-Г</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-3">
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">Оберіть тему для тестування</label>
+                    <div class="relative">
+                        <i data-lucide="book-open" class="absolute left-3 top-3.5 w-5 h-5 text-slate-400"></i>
+                        <select id="topicSelect" class="w-full pl-10 pr-4 py-3 bg-slate-900/60 border border-slate-700 rounded-xl focus:ring-2 focus:ring-purple-500 focus:outline-none text-white">
+                            <option value="all">Комплексний тест (Усі 9 тем • 72 питання)</option>
+                            <!-- Topics populated dynamically -->
+                        </select>
+                    </div>
+                </div>
+
+                <div class="p-4 rounded-xl bg-purple-950/30 border border-purple-800/40 text-purple-200 text-xs sm:text-sm flex items-start gap-3">
+                    <i data-lucide="info" class="w-5 h-5 shrink-0 text-purple-400 mt-0.5"></i>
+                    <div>
+                        <span class="font-semibold">Правила тестування:</span> Кожна окрема тема містить 8 запитань. Кожна правильна відповідь дає 1 бал. Максимальна оцінка за тему — 8 балів. По завершенню буде згенеровано картку результату.
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full py-4 rounded-xl font-bold text-lg text-white gradient-btn flex items-center justify-center gap-2 shadow-lg">
+                    <i data-lucide="play-circle"></i> Розпочати тестування
+                </button>
+            </form>
+        </div>
+
+        <!-- SCREEN 2: QUIZ INTERFACE -->
+        <div id="quizScreen" class="hidden glass-card rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6">
+            <!-- Header of Quiz -->
+            <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 border-b border-slate-700/60 pb-4">
+                <div>
+                    <span id="quizTopicBadge" class="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-purple-900/60 text-purple-300 border border-purple-700/50 mb-1">
+                        Тема 1
+                    </span>
+                    <h2 id="quizTopicTitle" class="text-base sm:text-lg font-bold text-white line-clamp-1">
+                        Назва теми
+                    </h2>
+                </div>
+                <div class="flex items-center gap-4 text-xs sm:text-sm text-slate-300 shrink-0">
+                    <div class="px-3 py-1.5 rounded-lg bg-slate-800/80 border border-slate-700">
+                        Учень: <span id="quizStudentInfo" class="font-semibold text-purple-300"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="space-y-2">
+                <div class="flex justify-between text-xs text-slate-400 font-medium">
+                    <span>Питання <span id="currentQNum">1</span> з <span id="totalQNum">8</span></span>
+                    <span id="progressPercent">12%</span>
+                </div>
+                <div class="w-full bg-slate-800 rounded-full h-2.5 overflow-hidden border border-slate-700/50">
+                    <div id="progressBar" class="bg-gradient-to-r from-blue-500 to-purple-500 h-2.5 rounded-full transition-all duration-300" style="width: 12%"></div>
+                </div>
+            </div>
+
+            <!-- Question Box -->
+            <div class="bg-slate-900/50 border border-slate-800 p-5 sm:p-6 rounded-xl space-y-4">
+                <h3 id="questionText" class="text-lg sm:text-xl font-semibold text-white leading-relaxed">
+                    Текст питання...
+                </h3>
+
+                <!-- Options -->
+                <div id="optionsContainer" class="space-y-3 pt-2">
+                    <!-- Options inserted dynamically -->
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="flex justify-between items-center pt-2">
+                <button id="prevBtn" onclick="prevQuestion()" class="px-5 py-2.5 rounded-xl border border-slate-700 hover:bg-slate-800 font-medium text-slate-300 flex items-center gap-2 transition disabled:opacity-40 disabled:cursor-not-allowed">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i> Назад
+                </button>
+                <button id="nextBtn" onclick="nextQuestion()" class="px-6 py-2.5 rounded-xl font-semibold text-white gradient-btn flex items-center gap-2 shadow-md">
+                    Далі <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- SCREEN 3: RESULTS -->
+        <div id="resultScreen" class="hidden space-y-6">
+            
+            <!-- Result Card for Print / View -->
+            <div id="certificateCard" class="certificate-box glass-card rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6 border border-purple-500/30">
+                <div class="text-center border-b border-slate-700/60 pb-6">
+                    <div class="inline-flex p-3 rounded-full bg-purple-500/20 text-purple-400 mb-3 border border-purple-500/30">
+                        <i data-lucide="award" class="w-10 h-10"></i>
+                    </div>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-white">Результат Тестування</h2>
+                    <p class="text-slate-400 text-sm mt-1">З курсу «Інформатика 11 клас: Графічний редактор GIMP»</p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-900/60 p-4 rounded-xl border border-slate-800 text-sm">
+                    <div>
+                        <span class="text-slate-400 block">Учень / Учениця:</span>
+                        <span id="resStudentName" class="font-bold text-base text-white"></span>
+                    </div>
+                    <div>
+                        <span class="text-slate-400 block">Клас:</span>
+                        <span id="resStudentClass" class="font-bold text-base text-purple-300"></span>
+                    </div>
+                    <div>
+                        <span class="text-slate-400 block">Тема:</span>
+                        <span id="resTopicTitle" class="font-bold text-slate-200"></span>
+                    </div>
+                    <div>
+                        <span class="text-slate-400 block">Дата та час:</span>
+                        <span id="resDateTime" class="font-medium text-slate-300"></span>
+                    </div>
+                </div>
+
+                <!-- Score Highlight -->
+                <div class="text-center p-6 bg-gradient-to-br from-slate-900/90 to-purple-950/50 rounded-2xl border border-purple-500/30 space-y-2">
+                    <span class="text-xs uppercase font-semibold text-purple-300 tracking-wider">Підсумкова оцінка</span>
+                    <div class="text-4xl sm:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-emerald-300 to-teal-200" id="resScoreText">
+                        8 / 8
+                    </div>
+                    <p id="resScoreDetail" class="text-sm text-slate-300 font-medium">Успішність: 100%</p>
+                    <div id="gradeBadge" class="inline-block px-4 py-1.5 rounded-full text-xs font-bold bg-green-500/20 text-green-300 border border-green-500/40 mt-2">
+                        Відмінно
+                    </div>
+                </div>
+
+                <!-- Detailed Analysis Header -->
+                <div class="pt-4 border-t border-slate-700/60 no-print">
+                    <h3 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
+                        <i data-lucide="file-text" class="text-purple-400"></i> Детальний аналіз відповідей
+                    </h3>
+                    <div id="reviewContainer" class="space-y-3 max-h-96 overflow-y-auto pr-2">
+                        <!-- Review items generated dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-col sm:flex-row gap-3 justify-center no-print">
+                <button onclick="window.print()" class="py-3 px-6 rounded-xl font-semibold bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white flex items-center justify-center gap-2 transition">
+                    <i data-lucide="printer" class="w-5 h-5"></i> Друкувати / Зберегти в PDF
+                </button>
+                <button onclick="restartQuiz()" class="py-3 px-6 rounded-xl font-semibold text-white gradient-btn flex items-center justify-center gap-2 shadow-lg">
+                    <i data-lucide="rotate-ccw" class="w-5 h-5"></i> Обрати іншу тему
+                </button>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <footer class="text-center text-slate-500 text-xs mt-10 no-print">
+            © 2026 Онлайн-тестування з інформатики. 11 клас. Всі теми розроблені відповідно до навчальної програми.
+        </footer>
+
+    </div>
+
+    <!-- SCRIPT WITH COMPLETE DATABASE & LOGIC -->
+    <script>
+        // DATA STRUCTURE: All 9 topics with full 8 questions each (72 questions total)
+        const topicsData = [
+            {
+                id: 1,
+                title: "1. Комп’ютерна графіка та сучасні напрями її використання. Інсталяція графічного редактора",
+                questions: [
+                    {
+                        q: "Який із зазначених напрямів комп’ютерної графіки відповідає за створення тривимірних об’єктів та анімацій у кіно й іграх?",
+                        options: ["Векторний дизайн", "3D-графіка", "Поліграфія", "Піксель-арт"],
+                        correct: 1
+                    },
+                    {
+                        q: "Який тип графіки базується на математичних формулах, а не на сітці пікселів?",
+                        options: ["Растрова", "Векторна", "Фрактальна", "Текстурна"],
+                        correct: 1
+                    },
+                    {
+                        q: "Що є найменшим елементом растрового зображення?",
+                        options: ["Вектор", "Вузол", "Піксель", "Шар"],
+                        correct: 2
+                    },
+                    {
+                        q: "Яка основна перевага векторної графіки порівняно з растровою?",
+                        options: ["Реалістичність відтворення фотографій", "Масштабування без втрати якості", "Малий розмір файлу при зберіганні складних фотографій", "Підтримка масок шарів"],
+                        correct: 1
+                    },
+                    {
+                        q: "Що з переліченого НЕ є сферою застосування сучасного Web-дизайну?",
+                        options: ["Створення макетів сайтів", "Розробка користувацьких інтерфейсів (UI/UX)", "Програмування мікроконтролерів", "Оформлення банерів для інтернет-сторінок"],
+                        correct: 2
+                    },
+                    {
+                        q: "Під час інсталяції програмного забезпечення файл з яким розширенням зазвичай запускають у ОС Windows?",
+                        options: [".txt", ".exe", ".png", ".zip"],
+                        correct: 1
+                    },
+                    {
+                        q: "Як називається програмне забезпечення, що розповсюджується безкоштовно та з відкритим вихідним кодом (наприклад, GIMP)?",
+                        options: ["Shareware", "Commercial", "Open Source (ПО з відкритим кодом)", "Trial"],
+                        correct: 2
+                    },
+                    {
+                        q: "Що необхідно перевірити перед інсталяцією графічного редактора на комп'ютер?",
+                        options: ["Швидкість інтернет-з'єднання", "Системні вимоги програми та відповідність їм обладнання", "Кількість збережених файлів у кошику", "Версію графічного редактора на інших пристроях"],
+                        correct: 1
+                    }
+                ]
+            },
+            {
+                id: 2,
+                title: "2. Моделі відображення кольору. Формати графічних файлів",
+                questions: [
+                    {
+                        q: "Яка колірна модель є аддитивною (використовується для моніторів та екранів)?",
+                        options: ["CMYK", "RGB", "HSL", "Grayscale"],
+                        correct: 1
+                    },
+                    {
+                        q: "Яка колірна модель використовується переважно у поліграфії (для друку)?",
+                        options: ["RGB", "CMYK", "LAB", "HSB"],
+                        correct: 1
+                    },
+                    {
+                        q: "Які основні кольори входять до моделі RGB?",
+                        options: ["Червоний, зелений, синій", "Блакитний, пурпуровий, жовтий", "Червоний, жовтий, синій", "Зелений, жовтий, чорний"],
+                        correct: 0
+                    },
+                    {
+                        q: "Що означає літера 'K' у назві колірної моделі CMYK?",
+                        options: ["Key (Чорний)", "Kyan (Блакитний)", "Kind (Різновид)", "Knowledge (Контраст)"],
+                        correct: 0
+                    },
+                    {
+                        q: "Який формат файлів підтримує прозорість та анімацію?",
+                        options: ["JPEG", "GIF", "BMP", "TIFF"],
+                        correct: 1
+                    },
+                    {
+                        q: "Який формат зображень забезпечує високе стиснення фотографій, але використовує алгоритм стиснення із втратою якості?",
+                        options: ["PNG", "TIFF", "JPEG", "PSD"],
+                        correct: 2
+                    },
+                    {
+                        q: "Який формат зображень найкраще підходить для збереження графіки з прозорим тлом без втрати якості?",
+                        options: ["JPEG", "PNG", "BMP", "RAW"],
+                        correct: 1
+                    },
+                    {
+                        q: "Який із форматів зберігає 'сирі' (необроблені) дані безпосередньо з матриці фотоапарата?",
+                        options: ["RAW", "GIF", "PNG", "WEBP"],
+                        correct: 0
+                    }
+                ]
+            },
+            {
+                id: 3,
+                title: "3. Растровий графічний редактор GIMP. Інтерфейс редактора. Створення мультимедійної кнопки",
+                questions: [
+                    {
+                        q: "До якої категорії програм відноситься графічний редактор GIMP?",
+                        options: ["Векторні графічні редактори", "Растрові графічні редактори", "3D-моделювальники", "Відеоредактори"],
+                        correct: 1
+                    },
+                    {
+                        q: "Як називається головна панель у GIMP, де розміщені основні інструменти для малювання та виділення?",
+                        options: ["Панель шарів", "Панель елементів", "Панель інструментів (Toolbox)", "Рядок стану"],
+                        correct: 2
+                    },
+                    {
+                        q: "У якому форматі збережеться проект GIMP за замовчуванням, зберігаючи всі шари та налаштування?",
+                        options: [".png", ".xcf", ".psd", ".gimp"],
+                        correct: 1
+                    },
+                    {
+                        q: "Який діалог (панель) дозволяє переглядати та редагувати порядок об’єктів за глибиною?",
+                        options: ["Журнал дій", "Шари (Layers)", "Текстури", "Пензлі"],
+                        correct: 1
+                    },
+                    {
+                        q: "Яку дію потрібно виконати, щоб експортувати готове зображення з GIMP у формат JPEG?",
+                        options: ["Файл -> Зберегти", "Файл -> Експортувати як...", "Файл -> Створити", "Правка -> Скопіювати"],
+                        correct: 1
+                    },
+                    {
+                        q: "Який з ефектів часто застосовують до об'єкта, щоб надати мультимедійній кнопці об'єму (ефект випуклості/3D)?",
+                        options: ["Поворот", "Відкидання тіні / Градієнт / Фаска", "Кадрування", "Знебарвлення"],
+                        correct: 1
+                    },
+                    {
+                        q: "Яка комбінація клавіш скасовує останню виконану дію в GIMP?",
+                        options: ["Ctrl + Z", "Ctrl + C", "Ctrl + S", "Ctrl + A"],
+                        correct: 0
+                    },
+                    {
+                        q: "Яка функція дозволяє вирівняти мультимедійну кнопку рівно по центру полотна?",
+                        options: ["Інструмент «Вирівнювання» (Alignment)", "Інструмент «Пензель»", "Інструмент «Масштаб»", "Маска шару"],
+                        correct: 0
+                    }
+                ]
+            },
+            {
+                id: 4,
+                title: "4. Інструменти малювання та виділення в GIMP та їх налаштування",
+                questions: [
+                    {
+                        q: "Який інструмент дозволяє виділити прямокутну область на зображенні?",
+                        options: ["Прямокутне виділення", "Еліптичне виділення", "Вільне виділення (Ласо)", "Нечітке виділення (Чарівна паличка)"],
+                        correct: 0
+                    },
+                    {
+                        q: "Який інструмент призначений для виділення суміжних ділянок одного кольору?",
+                        options: ["Ласо", "Нечітке виділення (Fuzzy Select / Чарівна паличка)", "Прямокутне виділення", "Виділення за кольором"],
+                        correct: 1
+                    },
+                    {
+                        q: "Що робить параметр «Розмивання країв» (Feather edges) під час виділення?",
+                        options: ["Збільшує чіткість кордонів", "Створює плавний, розмитий перехід на межі виділення", "Інвертує виділену область", "Видаляє виділений вміст"],
+                        correct: 1
+                    },
+                    {
+                        q: "Який інструмент використовується для створення плавного переходу від одного кольору до іншого?",
+                        options: ["Заповнення (Заповнення кольором)", "Градієнт", "Олівець", "Пензель"],
+                        correct: 1
+                    },
+                    {
+                        q: "Чим інструмент «Олівець» відрізняється від інструмента «Пензель» у GIMP?",
+                        options: ["Малює лише білим кольором", "Малює чіткі піксельні краї без згладжування", "Не має параметрів розміру", "Використовується лише для векторних ліній"],
+                        correct: 1
+                    },
+                    {
+                        q: "Яка комбінація клавіш знімає все виділення з полотна?",
+                        options: ["Ctrl + A", "Shift + Ctrl + A", "Ctrl + Shift + I", "Ctrl + D"],
+                        correct: 1
+                    },
+                    {
+                        q: "Яка функція інвертує виділення (виділяє все, крім поточного фрагмента)?",
+                        options: ["Виділення -> Інвертувати (Ctrl + I)", "Виділення -> Зняти", "Виділення -> Растровий шар", "Правка -> Очистити"],
+                        correct: 0
+                    },
+                    {
+                        q: "Який параметр інструмента «Пензель» відповідає за ступінь його прозорості під час малювання?",
+                        options: ["Розмір", "Непрозорість (Opacity)", "Натиск", "Кут"],
+                        correct: 1
+                    }
+                ]
+            },
+            {
+                id: 5,
+                title: "5. Інструменти трансформації в GIMP та їх налаштування. Практична робота. Створення абстракції",
+                questions: [
+                    {
+                        q: "Який інструмент дозволяє відрізати зайві частини зображення та зменшити розмір полотна?",
+                        options: ["Масштаб", "Кадрування (Crop)", "Обертання", "Нахил"],
+                        correct: 1
+                    },
+                    {
+                        q: "Для чого призначений інструмент «Масштаб» (Scale)?",
+                        options: ["Для зміни кута нахилу зображення", "Для зміни пропорцій та розмірів об’єкта або шару", "Для відображення об'єкта дзеркально", "Для виправлення перспективи"],
+                        correct: 1
+                    },
+                    {
+                        q: "Який інструмент виправляє викривлення будівель або об'єктів, знятих під кутом?",
+                        options: ["Перспектива", "Нахил", "Обертання", "Дзеркало"],
+                        correct: 0
+                    },
+                    {
+                        q: "Що відбувається при використанні інструмента «Дзеркало» (Flip)?",
+                        options: ["Об'єкт повертається на 90 градусів", "Об'єкт відображається горизонтально або вертикально", "Зображення розмивається", "Об'єкт викривляється за сіткою"],
+                        correct: 1
+                    },
+                    {
+                        q: "Який інструмент дозволяє плавно деформувати окремі ділянки зображення за допомогою перетягування сітки?",
+                        options: ["Трансформація за допомогою сітки / Інтерактивна деформація (Warp)", "Кадрування", "Обертання", "Вирівнювання"],
+                        correct: 0
+                    },
+                    {
+                        q: "Якщо під час масштабного трансформування увімкнуто значок «замкнений ланцюжок», це означає, що:",
+                        options: ["Пропорції ширини та висоти змінюватимуться зберігаючись (синхронно)", "Зображення заблоковане для редагування", "Шар об'єднано з нижнім", "Змінюватиметься тільки ширина"],
+                        correct: 0
+                    },
+                    {
+                        q: "Інструмент «Обертання» (Rotate) дозволяє:",
+                        options: ["Повертати шар чи виділення навколо центральної точки на довільний кут", "Збільшувати чіткість фотографії", "Вирізати прямокутну ділянку", "Знебарвлювати об'єкт"],
+                        correct: 0
+                    },
+                    {
+                        q: "Який інструмент дає змогу змістити один край зображення паралельно іншому (зробити з прямокутника паралелограм)?",
+                        options: ["Нахил (Shear)", "Кадрування", "Масштаб", "Штамп"],
+                        correct: 0
+                    }
+                ]
+            },
+            {
+                id: 6,
+                title: "6. Шари. Створення колажу",
+                questions: [
+                    {
+                        q: "Що таке шари у графічному редакторі?",
+                        options: ["Кольорові фільтри", "Прозорі плівки, розміщені одна над одною, з розташованими на них елементами", "Інструменти для видалення зображення", "Формати збереження файлу"],
+                        correct: 1
+                    },
+                    {
+                        q: "Яка головна перевага використання шарів під час створення колажу?",
+                        options: ["Файл займає менше місця", "Можливість редагувати окремі елементи незалежно від інших", "Зображення автоматично стає векторним", "Збільшується кількість кольорів"],
+                        correct: 1
+                    },
+                    {
+                        q: "Що робить параметр «Непрозорість» (Opacity) шару?",
+                        options: ["Змінює розмір шару", "Регулює рівень прозорості поточного шару", "Змінює колір зображення", "Заблоковує шар від змін"],
+                        correct: 1
+                    },
+                    {
+                        q: "Яка кнопка в панелі шарів дозволяє приховати або показати шар на полотні?",
+                        options: ["Значок «Ланцюжок»", "Значок «Око»", "Значок «Замок»", "Значок «Плюс»"],
+                        correct: 1
+                    },
+                    {
+                        q: "Що відбувається при команді «Об'єднати з попереднім» (Merge Down)?",
+                        options: ["Активний шар об'єднується з шаром, який розташований безпосередньо під ним", "Всі шари видаляються", "Створюється новий порожній шар", "Шар дублюється"],
+                        correct: 0
+                    },
+                    {
+                        q: "Як змінити порядок перекриття об'єктів у колажі?",
+                        options: ["Перетягнути шар вище або нижче у списку шарів", "Використати інструмент «Пензель»", "Змінити формат файлу", "Використати кадрування"],
+                        correct: 0
+                    },
+                    {
+                        q: "Що відбувається при зведенні (або сплощенні) зображення (Flatten Image)?",
+                        options: ["Всі шари об'єднуються в один єдиний фоновий шар", "Видаляються прозорі шари", "Всі шари експортуються в окремі файли", "Роздільна здатність збільшується вдвічі"],
+                        correct: 0
+                    },
+                    {
+                        q: "Яку дію потрібно виконати, щоб створити точну копію існуючого шару?",
+                        options: ["Видалити шар", "Здублювати шар (Duplicate Layer)", "Масштабувати шар", "Створити маску шару"],
+                        correct: 1
+                    }
+                ]
+            },
+            {
+                id: 7,
+                title: "7. Особливості застосування маски шару. Накладання текстур",
+                questions: [
+                    {
+                        q: "Що таке маска шару в GIMP?",
+                        options: ["Інструмент для виділення текстів", "Допоміжний шар, що регулює прозорість окремих ділянок основного шару без видалення пікселів", "Фільтр для збільшення різкості", "Набір векторних фігур"],
+                        correct: 1
+                    },
+                    {
+                        q: "Що відбувається з ділянками шару, де на масці шару нанесено ЧОРНИЙ колір?",
+                        options: ["Вони стають повністю прозорими (приховуються)", "Вони стають білими", "Вони стають повністю непрозорими (видимими)", "Вони інвертуються"],
+                        correct: 0
+                    },
+                    {
+                        q: "Яку функцію виконує БІЛИЙ колір на масці шару?",
+                        options: ["Робить ділянки прозорими", "Залишає ділянки зображення видимими (непрозорими)", "Видаляє ділянку шару назавжди", "Затемнює ділянку"],
+                        correct: 1
+                    },
+                    {
+                        q: "Який колір на масці шару створює напівпрозорість?",
+                        options: ["Синій", "Червоний", "Сірий", "Зелений"],
+                        correct: 2
+                    },
+                    {
+                        q: "Яка головна перевага маски шару над інструментом «Гумка»?",
+                        options: ["Зображення займає менше пам'яті", "Недеструктивне редагування (видалені ділянки можна відновити білим пензлем)", "Маска прискорює роботу ПК", "Маска автоматично підбирає кольори"],
+                        correct: 1
+                    },
+                    {
+                        q: "Для чого використовується режим накладання шарів (Layer Modes, наприклад, Multiply, Overlay) при накладанні текстур?",
+                        options: ["Для об'єднання кількох файлів у zip-архів", "Для змішування кольорів і світлотіней текстури з основним зображенням", "Для автоматичного кадрування текстури", "Для зміни роздільної здатності"],
+                        correct: 1
+                    },
+                    {
+                        q: "Як видалити маску шару з застосуванням її ефекту на постійній основі?",
+                        options: ["Клацнути «Застосувати маску шару» (Apply Layer Mask)", "Натиснути Delete", "Видалити весь шар", "Зняти виділення"],
+                        correct: 0
+                    },
+                    {
+                        q: "Щоб створити плавний перехід між двома зображеннями за допомогою маски, який інструмент найчастіше наносять на маску шару?",
+                        options: ["Штамп", "Чорно-білий градієнт", "Олівець", "Текст"],
+                        correct: 1
+                    }
+                ]
+            },
+            {
+                id: 8,
+                title: "8. Коригування зображень. Інструменти ретушування в GIMP",
+                questions: [
+                    {
+                        q: "Який інструмент ретушування дозволяє скопіювати зразок ділянки зображення і замалювати ним дефект (наприклад, подряпину)?",
+                        options: ["Лікувальний пензель (Heal)", "Штамп (Clone)", "Розмивання", "Палець"],
+                        correct: 1
+                    },
+                    {
+                        q: "Чим інструмент «Лікувальний пензель» (Heal tool) відрізняється від «Штампа» (Clone)?",
+                        options: ["Малює лише чорно-білим", "Автоматично враховує текстуру, освітлення та колір навколишніх пікселів для непомітного змішування", "Працює лише з текстом", "Видаляє шар"],
+                        correct: 1
+                    },
+                    {
+                        q: "Який інструмент використовується для розмиття або збільшення чіткості окремих ділянок зображення?",
+                        options: ["Різкість / Розмивання (Blur/Sharpen)", "Масштаб", "Кадрування", "Текст"],
+                        correct: 0
+                    },
+                    {
+                        q: "Інструмент «Палець» (Smudge) призначений для:",
+                        options: ["Створення копії об'єкта", "Імітації розмазування сирої фарби на зображенні", "Зміни яскравості", "Точкового видалення кольору"],
+                        correct: 1
+                    },
+                    {
+                        q: "Який інструмент підходить для локального освітлення або затемнення окремих ділянок фотографії?",
+                        options: ["Освітлення / Затемнення (Dodge / Burn)", "Штамп", "Піпетка", "Ласо"],
+                        correct: 0
+                    },
+                    {
+                        q: "Яке меню містить інструменти для зміни яскравості, контрастності, насиченості та колірного балансу?",
+                        options: ["Фільтри", "Колір (Colors)", "Виділення", "Вигляд"],
+                        correct: 1
+                    },
+                    {
+                        q: "Для чого використовується інструмент «Рівні» (Levels) або «Криві» (Curves)?",
+                        options: ["Для розгортання зображення на 180 градусів", "Для точного коригування тонального діапазону, тонів, контрасту та яскравості", "Для малювання векторних ліній", "Для створення текстур"],
+                        correct: 1
+                    },
+                    {
+                        q: "Яка функція дозволяє швидким способом зробити кольорову фотографію чорно-білою?",
+                        options: ["Колір -> Знебарвлення (Desaturate)", "Файл -> Експорт", "Правка -> Очистити", "Шари -> Автомасштаб"],
+                        correct: 0
+                    }
+                ]
+            },
+            {
+                id: 9,
+                title: "9. Інструмент Текст",
+                questions: [
+                    {
+                        q: "Який вигляд має курсор інструмента «Текст» на панелі інструментів GIMP?",
+                        options: ["Символ «A»", "Стрілка", "Пензель", "Олівець"],
+                        correct: 0
+                    },
+                    {
+                        q: "Що відбувається у панелі шарів під час створення нового текстового напису на полотні?",
+                        options: ["Текст додається до поточного активного шару", "Автоматично створюється новий текстовий шар", "Текст розміщується на масці шару", "Усі інші шари блокуються"],
+                        correct: 1
+                    },
+                    {
+                        q: "Які параметри тексту можна налаштувати у параметрах інструмента «Текст»?",
+                        options: ["Гарнітуру (шрифт), розмір, колір, міжрядковий інтервал", "Режим накладання маски", "Формат файлу", "Кількість пікселів полотна"],
+                        correct: 0
+                    },
+                    {
+                        q: "Чи можна редагувати буквений вміст текстового шару після його створення?",
+                        options: ["Ні, він одразу перетворюється на растровую картинку", "Так, якщо вибрати інструмент «Текст» і клацнути по напису", "Так, але тільки через зміну масштабу", "Тільки після збереження файлу в .jpg"],
+                        correct: 1
+                    },
+                    {
+                        q: "Що станеться з текстовим шаром, якщо до нього застосувати інструмент трансформації (наприклад, «Нахил» або «Перспектива»)?",
+                        options: ["Текст залишиться текстовим об’єктом", "Текст буде растровано (перетворено на растровий шар) і втратить можливість редагування букв", "Текст видалиться", "Текст автоматично перекладеться іншою мовою"],
+                        correct: 1
+                    },
+                    {
+                        q: "Яка функція дозволяє пустити текст уздовж довільної кривої лінії (контуру)?",
+                        options: ["Текст за контуром (Text along Path)", "Масштабувати текст", "Заповнити градієнтом", "Створити маску тексту"],
+                        correct: 0
+                    },
+                    {
+                        q: "Для чого використовується функція «Текст у контур» (Text to Path)?",
+                        options: ["Для перетворення букв у векторні контури для подальшої деформації або заливки", "Для перевірки орфографії", "Для зміни шрифту на стандартний", "Для автоматичного видалення тла"],
+                        correct: 0
+                    },
+                    {
+                        q: "Який із варіантів вирівнювання текстового блоку НЕ є стандартним?",
+                        options: ["За лівим краєм", "За центром", "За правим краєм", "За радіусом"],
+                        correct: 3
+                    }
+                ]
+            }
+        ];
+
+        // STATE VARIABLES
+        let currentStudent = { name: "", class: "" };
+        let activeQuestions = [];
+        let userAnswers = [];
+        let currentQuestionIdx = 0;
+        let selectedTopicTitle = "";
+
+        // INITIALIZATION
+        window.onload = function() {
+            lucide.createIcons();
+            populateTopicSelect();
+        };
+
+        function populateTopicSelect() {
+            const select = document.getElementById('topicSelect');
+            topicsData.forEach(t => {
+                const opt = document.createElement('option');
+                opt.value = t.id;
+                opt.textContent = t.title;
+                select.appendChild(opt);
+            });
+        }
+
+        // START QUIZ LOGIC
+        function startQuiz() {
+            const nameInput = document.getElementById('studentName').value.trim();
+            const classInput = document.getElementById('studentClass').value;
+            const topicValue = document.getElementById('topicSelect').value;
+
+            if (!nameInput || !classInput) {
+                alert("Будь ласка, введіть своє прізвище, ім'я та оберіть клас.");
+                return;
+            }
+
+            currentStudent.name = nameInput;
+            currentStudent.class = classInput;
+
+            activeQuestions = [];
+            if (topicValue === "all") {
+                selectedTopicTitle = "Комплексний підсумковий тест (Усі теми)";
+                topicsData.forEach(t => {
+                    t.questions.forEach(q => {
+                        activeQuestions.push({
+                            ...q,
+                            topicName: t.title
+                        });
+                    });
+                });
+            } else {
+                const topicObj = topicsData.find(t => t.id == topicValue);
+                selectedTopicTitle = topicObj.title;
+                activeQuestions = topicObj.questions.map(q => ({
+                    ...q,
+                    topicName: topicObj.title
+                }));
+            }
+
+            userAnswers = new Array(activeQuestions.length).fill(null);
+            currentQuestionIdx = 0;
+
+            // UI Switch
+            document.getElementById('welcomeScreen').classList.add('hidden');
+            document.getElementById('quizScreen').classList.remove('hidden');
+
+            document.getElementById('quizStudentInfo').textContent = `${currentStudent.name} (${currentStudent.class})`;
+            document.getElementById('totalQNum').textContent = activeQuestions.length;
+
+            renderQuestion();
+        }
+
+        // RENDER QUESTION
+        function renderQuestion() {
+            const qData = activeQuestions[currentQuestionIdx];
+
+            document.getElementById('currentQNum').textContent = currentQuestionIdx + 1;
+            document.getElementById('quizTopicBadge').textContent = `Питання ${currentQuestionIdx + 1}`;
+            document.getElementById('quizTopicTitle').textContent = qData.topicName;
+            document.getElementById('questionText').textContent = qData.q;
+
+            // Progress bar
+            const percent = Math.round(((currentQuestionIdx + 1) / activeQuestions.length) * 100);
+            document.getElementById('progressBar').style.width = percent + '%';
+            document.getElementById('progressPercent').textContent = percent + '%';
+
+            // Options
+            const container = document.getElementById('optionsContainer');
+            container.innerHTML = '';
+
+            qData.options.forEach((optText, optIdx) => {
+                const isSelected = userAnswers[currentQuestionIdx] === optIdx;
+                
+                const optDiv = document.createElement('div');
+                optDiv.className = 'relative';
+                optDiv.innerHTML = `
+                    <input type="radio" id="opt_${optIdx}" name="quizOption" value="${optIdx}" ${isSelected ? 'checked' : ''} 
+                           onchange="selectOption(${optIdx})" class="hidden custom-radio">
+                    <label for="opt_${optIdx}" class="flex items-center gap-3 p-4 rounded-xl border border-slate-700/80 bg-slate-800/40 hover:bg-slate-800 cursor-pointer transition text-sm sm:text-base text-slate-200">
+                        <span class="w-7 h-7 rounded-full border border-slate-600 flex items-center justify-center text-xs font-bold shrink-0 bg-slate-900 text-purple-400">
+                            ${String.fromCharCode(65 + optIdx)}
+                        </span>
+                        <span>${optText}</span>
+                    </label>
+                `;
+                container.appendChild(optDiv);
+            });
+
+            // Navigation Buttons State
+            document.getElementById('prevBtn').disabled = currentQuestionIdx === 0;
+            
+            const nextBtn = document.getElementById('nextBtn');
+            if (currentQuestionIdx === activeQuestions.length - 1) {
+                nextBtn.innerHTML = `Завершити <i data-lucide="check-circle" class="w-4 h-4"></i>`;
+            } else {
+                nextBtn.innerHTML = `Далі <i data-lucide="arrow-right" class="w-4 h-4"></i>`;
+            }
+            lucide.createIcons();
+        }
+
+        function selectOption(optIdx) {
+            userAnswers[currentQuestionIdx] = optIdx;
+        }
+
+        function nextQuestion() {
+            if (userAnswers[currentQuestionIdx] === null) {
+                alert("Будь ласка, оберіть варіант відповіді перед тим як продовжити!");
+                return;
+            }
+
+            if (currentQuestionIdx < activeQuestions.length - 1) {
+                currentQuestionIdx++;
+                renderQuestion();
+            } else {
+                finishQuiz();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestionIdx > 0) {
+                currentQuestionIdx--;
+                renderQuestion();
+            }
+        }
+
+        // FINISH QUIZ & CALCULATE SCORE
+        function finishQuiz() {
+            let correctCount = 0;
+            activeQuestions.forEach((q, idx) => {
+                if (userAnswers[idx] === q.correct) {
+                    correctCount++;
+                }
+            });
+
+            const total = activeQuestions.length;
+            
+            // Calculate scaled score out of 8 if single topic, or proportional grade
+            let displayScoreText = "";
+            let percentage = Math.round((correctCount / total) * 100);
+            
+            if (total === 8) {
+                // 1 Topic -> 8 points scale
+                displayScoreText = `${correctCount} / 8 балів`;
+            } else {
+                // All topics combined
+                const scale8 = ((correctCount / total) * 8).toFixed(1);
+                displayScoreText = `${correctCount} / ${total} (Оцінка: ${scale8} / 8)`;
+            }
+
+            // Fill Result Card
+            document.getElementById('resStudentName').textContent = currentStudent.name;
+            document.getElementById('resStudentClass').textContent = currentStudent.class;
+            document.getElementById('resTopicTitle').textContent = selectedTopicTitle;
+            
+            const now = new Date();
+            document.getElementById('resDateTime').textContent = now.toLocaleString('uk-UA');
+
+            document.getElementById('resScoreText').textContent = displayScoreText;
+            document.getElementById('resScoreDetail').textContent = `Правильних відповідей: ${correctCount} з ${total} (${percentage}%)`;
+
+            // Grade Badge
+            const badge = document.getElementById('gradeBadge');
+            if (percentage >= 85) {
+                badge.className = "inline-block px-4 py-1.5 rounded-full text-xs font-bold bg-green-500/20 text-green-300 border border-green-500/40 mt-2";
+                badge.textContent = "Високий рівень (Відмінно)";
+            } else if (percentage >= 65) {
+                badge.className = "inline-block px-4 py-1.5 rounded-full text-xs font-bold bg-blue-500/20 text-blue-300 border border-blue-500/40 mt-2";
+                badge.textContent = "Достатній рівень (Добре)";
+            } else if (percentage >= 50) {
+                badge.className = "inline-block px-4 py-1.5 rounded-full text-xs font-bold bg-yellow-500/20 text-yellow-300 border border-yellow-500/40 mt-2";
+                badge.textContent = "Середній рівень (Задовільно)";
+            } else {
+                badge.className = "inline-block px-4 py-1.5 rounded-full text-xs font-bold bg-red-500/20 text-red-300 border border-red-500/40 mt-2";
+                badge.textContent = "Початковий рівень (Потребує повторення)";
+            }
+
+            // Render Detailed Review
+            const reviewContainer = document.getElementById('reviewContainer');
+            reviewContainer.innerHTML = '';
+
+            activeQuestions.forEach((q, idx) => {
+                const isCorrect = userAnswers[idx] === q.correct;
+                const item = document.createElement('div');
+                item.className = `p-4 rounded-xl border text-sm ${isCorrect ? 'bg-green-950/20 border-green-800/40' : 'bg-red-950/20 border-red-800/40'}`;
+                
+                item.innerHTML = `
+                    <div class="flex items-start justify-between gap-2 mb-2">
+                        <span class="font-bold text-slate-200">${idx + 1}. ${q.q}</span>
+                        <span class="shrink-0 font-semibold px-2 py-0.5 rounded text-xs ${isCorrect ? 'bg-green-900/60 text-green-300' : 'bg-red-900/60 text-red-300'}">
+                            ${isCorrect ? 'Вірно (+1)' : 'Помилка (0)'}
+                        </span>
+                    </div>
+                    <div class="text-xs space-y-1 mt-2">
+                        <div class="${isCorrect ? 'text-green-400' : 'text-red-400'}">
+                            Ваша відповідь: ${q.options[userAnswers[idx]] || 'Немає відповіді'}
+                        </div>
+                        ${!isCorrect ? `<div class="text-green-400 font-medium">Правильна відповідь: ${q.options[q.correct]}</div>` : ''}
+                    </div>
+                `;
+                reviewContainer.appendChild(item);
+            });
+
+            // Switch Screen
+            document.getElementById('quizScreen').classList.add('hidden');
+            document.getElementById('resultScreen').classList.remove('hidden');
+            
+            lucide.createIcons();
+        }
+
+        // RESTART
+        function restartQuiz() {
+            document.getElementById('resultScreen').classList.add('hidden');
+            document.getElementById('welcomeScreen').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
